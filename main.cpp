@@ -19,7 +19,7 @@ vector<int> karger(Graph g) {
 }
 
 int main() {
-    string file_name = R"(../karger1.txt)";
+    string file_name = R"(../karger3.txt)";
     ifstream file(file_name);
     if (!file.is_open()) {
         cout << "balls";
@@ -33,9 +33,11 @@ int main() {
         int split_index = line.find(' ');
         int start = stoi(line.substr(0, split_index));
         int end = stoi(line.substr(split_index, line.size()));
-        vertices.insert(start);
-        vertices.insert(end);
-        edge_list.emplace_back(start, end);
+        if (start != end) {
+            vertices.insert(start);
+            vertices.insert(end);
+            edge_list.emplace_back(start, end);
+        }
     }
     for (auto vertex: vertices) {
         set.add_node(vertex);
@@ -44,6 +46,9 @@ int main() {
     vector<int> test(1000, 0);
     int bound = 1000;
     for (int i=0; i<bound; i++) {
+        if (i%25==0) {
+            cout<<i<<"\n";
+        }
         for (int size: karger(graph)) {
             test[size] += 1;
         }
@@ -51,7 +56,7 @@ int main() {
     for (int i=0; i<test.size(); i++) {
         int count = test[i];
         if (count != 0) {
-            cout << "Mincut has size " << i << " with probability " << count / (7.0*bound);
+            cout << "Mincut has size " << i << " with probability p=" << count / (7.0*bound);
             break;
         }
     }

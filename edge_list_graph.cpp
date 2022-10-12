@@ -29,9 +29,14 @@ vector<int> edge_list_graph::karger() {
     unsigned int time = std::chrono::system_clock::now().time_since_epoch().count();
     auto rng = std::default_random_engine {time};
     std::shuffle(std::begin(edge_list), std::end(edge_list), rng);
-    for (;index<size-4; index++) {
+    int vertex_count = size;
+    while (vertex_count > 4) {
         Edge edge = edge_list[index];
-        vertex_set.merge(edge.first, edge.second);
+        if (vertex_set.find(edge.first) != vertex_set.find(edge.second)) {
+            vertex_set.merge(edge.first, edge.second);
+            vertex_count--;
+        }
+        index++;
     }
     unordered_set<int> cut;
     unordered_set<int> complement;
