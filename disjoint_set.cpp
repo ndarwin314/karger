@@ -5,15 +5,9 @@
 #include "disjoint_set.h"
 #include <iostream>
 
-void disjoint_set::add_node(Edge edge) {
-    node n{nullptr, 1, edge};
-    node_array.push_back(n);
-    for (auto m: node_array) {
-        if (m.value.second == n.value.second) {
-            merge(&m, &n);
-            return;
-        }
-    }
+void disjoint_set::add_node(int vertex) {
+    node n{nullptr, 1, vertex};
+    node_array[vertex] = n;
 }
 
 node* disjoint_set::find(node* n) {
@@ -23,6 +17,10 @@ node* disjoint_set::find(node* n) {
     } else {
         return n;
     }
+}
+
+node* disjoint_set::find(int vertex) {
+    return find(&node_array[vertex]);
 }
 
 void disjoint_set::merge(node* n1, node* n2) {
@@ -41,8 +39,17 @@ void disjoint_set::merge(node* n1, node* n2) {
 
 }
 
+void disjoint_set::merge(int v1, int v2) {
+    merge(&node_array[v1],&node_array[v2]);
+
+}
+
 void disjoint_set::print() {
     for (auto n: node_array) {
-        cout<<n.value.first<<", "<<n.value.second<<"\n";
+        cout<<n.second.value<<"\n";
     }
+}
+
+size_t disjoint_set::size() {
+    return node_array.size();
 }

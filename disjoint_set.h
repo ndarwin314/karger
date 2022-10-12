@@ -5,6 +5,7 @@
 #ifndef KARGER_DISJOINT_SET_H
 #define KARGER_DISJOINT_SET_H
 #include <vector>
+#include <unordered_map>
 #include <utility>
 
 using namespace std;
@@ -14,18 +15,21 @@ typedef pair<int, int> Edge;
 struct node{
     node *pointer;
     int size;
-    Edge value;
+    int value;
 };
 
 class disjoint_set {
 
-    public:
-        vector<node> node_array;
-        disjoint_set() = default;
-        void add_node(Edge);
-        node* find(node*);
-        void merge(node*, node*);
-        void print();
+public:
+    unordered_map<int, node> node_array;
+    disjoint_set() = default;
+    void add_node(int);
+    node* find(node*);
+    node* find(int);
+    void merge(node*, node*);
+    void merge(int, int);
+    size_t size();
+    void print();
 };
 
 
