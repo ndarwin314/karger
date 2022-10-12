@@ -14,6 +14,10 @@ using namespace std;
 
 typedef edge_list_graph Graph;
 
+vector<int> karger(Graph g) {
+    return g.karger();
+}
+
 int main() {
     string file_name = R"(../karger1.txt)";
     ifstream file(file_name);
@@ -36,11 +40,20 @@ int main() {
     for (auto vertex: vertices) {
         set.add_node(vertex);
     }
-    vector<int> out(7);
     Graph graph(set, edge_list);
-    graph.karger(out);
-    for (auto a: out) {
-        std::cout<<a<<"\n";
+    vector<int> test(1000, 0);
+    int bound = 1000;
+    for (int i=0; i<bound; i++) {
+        for (int size: karger(graph)) {
+            test[size] += 1;
+        }
+    }
+    for (int i=0; i<test.size(); i++) {
+        int count = test[i];
+        if (count != 0) {
+            cout << "Mincut has size " << i << " with probability " << count / (7.0*bound);
+            break;
+        }
     }
     return 0;
 }

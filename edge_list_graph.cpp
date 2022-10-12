@@ -1,6 +1,7 @@
 //
 // Created by Noah Feinberg on 10/11/22.
 //
+#include <iostream>
 #include <random>
 #include <algorithm>
 #include <chrono>
@@ -16,13 +17,14 @@ edge_list_graph::edge_list_graph(disjoint_set set, vector<Edge> list) {
 }
 
 int edge_list_graph::bad(int vertex, unordered_set<int> set) {
-    if (set.find(vertex_set.find(vertex)->value) != set.end()) {
+    auto representative = vertex_set.find(vertex)->value;
+    if (set.find(representative) != set.end()) {
         return 1;
     }
     return -1;
 }
 
-void edge_list_graph::karger(vector<int> out) {
+vector<int> edge_list_graph::karger() {
     // TODO: move this somewhere else
     unsigned int time = std::chrono::system_clock::now().time_since_epoch().count();
     auto rng = std::default_random_engine {time};
@@ -33,23 +35,26 @@ void edge_list_graph::karger(vector<int> out) {
     }
     unordered_set<int> cut;
     unordered_set<int> complement;
-    int shift = 0;
+    vector<int> out(7);
     for (int r=1; r<8; r++) {
-        cut.empty();
-        complement.empty();
+        int shift = 0;
+        cut.clear();
+        complement.clear();
         auto it = vertex_set.node_array.begin();
         cut.insert(vertex_set.find(&it->second)->value);
         it++;
         while (it != vertex_set.node_array.end()) {
-            if (cut.find(it->first)!=cut.end() || cut.find(it->first)!=cut.end()) {
+            auto representative = vertex_set.find(&it->second)->value;
+            if (cut.find(representative)==cut.end() && complement.find(representative)==complement.end()) {
                 // extract digit
-                int vertex = vertex_set.find(&it->second)->value;
                 if ((r>>shift)&1) {
-                    complement.insert(vertex);
+                    complement.insert(representative);
                 } else {
-                    cut.insert(vertex);
+                    cut.insert(representative);
                 }
+                shift++;
             }
+            it++;
         }
         int cut_size = 0;
         for (int i=index; i<edge_list.size(); i++) {
@@ -60,5 +65,5 @@ void edge_list_graph::karger(vector<int> out) {
         }
         out[r-1] = cut_size;
     }
-
+    return out;
 }

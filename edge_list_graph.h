@@ -19,7 +19,7 @@ public:
     vector<Edge> edge_list;
     int index, size;
     edge_list_graph(disjoint_set, vector<Edge>);
-    void karger(vector<int>);
+    vector<int> karger();
     int bad(int, unordered_set<int>);
 };
 

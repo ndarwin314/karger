@@ -46,7 +46,7 @@ void disjoint_set::merge(int v1, int v2) {
 
 void disjoint_set::print() {
     for (auto n: node_array) {
-        cout<<n.second.value<<"\n";
+        cout<<n.second.value<<", "<<  find(&n.second)->value<<"\n";
     }
 }
 
