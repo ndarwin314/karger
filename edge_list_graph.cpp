@@ -38,28 +38,29 @@ vector<int> edge_list_graph::karger() {
         }
         index++;
     }
+
+    vector<int> all;
+    auto it = vertex_set.node_array.begin();
+    while (it != vertex_set.node_array.end() && all.size()!=4) {
+        auto representative = vertex_set.find(&it->second)->value;
+        if (std::find(all.begin(), all.end(), representative)==all.end()) {
+            all.push_back(representative);
+        }
+        it++;
+    }
     unordered_set<int> cut;
     unordered_set<int> complement;
     vector<int> out(7);
     for (int r=1; r<8; r++) {
-        int shift = 0;
         cut.clear();
         complement.clear();
-        auto it = vertex_set.node_array.begin();
-        cut.insert(vertex_set.find(&it->second)->value);
-        it++;
-        while (it != vertex_set.node_array.end()) {
-            auto representative = vertex_set.find(&it->second)->value;
-            if (cut.find(representative)==cut.end() && complement.find(representative)==complement.end()) {
-                // extract digit
-                if ((r>>shift)&1) {
-                    complement.insert(representative);
-                } else {
-                    cut.insert(representative);
-                }
-                shift++;
+        cut.insert(all[0]);
+        for (int i=1; i<4; i++) {
+            if ((r>>(i-1))&1) {
+                complement.insert(all[i]);
+            } else {
+                cut.insert(all[i]);
             }
-            it++;
         }
         int cut_size = 0;
         for (int i=index; i<edge_list.size(); i++) {

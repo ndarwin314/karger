@@ -5,10 +5,12 @@
 #include "disjoint_set.h"
 #include <iostream>
 
+
 void disjoint_set::add_node(int vertex) {
     node n{nullptr, 1, vertex};
     node_array[vertex] = n;
 }
+
 
 node* disjoint_set::find(node* n) {
     if (n->pointer != nullptr) {

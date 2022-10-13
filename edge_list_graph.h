@@ -13,10 +13,10 @@
 typedef std::pair<int, int> Edge;
 
 class edge_list_graph {
-
-public:
     disjoint_set vertex_set;
     vector<Edge> edge_list;
+
+public:
     int index, size;
     edge_list_graph(disjoint_set, vector<Edge>);
     vector<int> karger();
