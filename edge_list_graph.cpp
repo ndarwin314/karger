@@ -6,22 +6,18 @@
 #include <algorithm>
 #include <chrono>
 #include <unordered_set>
-#include <utility>
 
 #include "edge_list_graph.h"
 
-template<typename k>
-edge_list_graph::edge_list_graph(k set, vector<Edge> list) {
+edge_list_graph::edge_list_graph(disjoint_set set, vector<Edge> list) {
     edge_list = list;
     vertex_set = set;
     index = 0;
-    size = vertex_set.template count_sets();
-    unsigned int time = std::chrono::system_clock::now().time_since_epoch().count();
-    rng = std::default_random_engine {time};
+    size = vertex_set.size();
 }
 
-int edge_list_graph::bad(int vertex, const unordered_set<int>& set) {
-    auto representative = vertex_set.find_set(vertex);
+int edge_list_graph::bad(int vertex, unordered_set<int> set) {
+    auto representative = vertex_set.find(vertex)->value;
     if (set.find(representative) != set.end()) {
         return 1;
     }
@@ -30,40 +26,41 @@ int edge_list_graph::bad(int vertex, const unordered_set<int>& set) {
 
 vector<int> edge_list_graph::karger() {
     // TODO: move this somewhere else
+    unsigned int time = std::chrono::system_clock::now().time_since_epoch().count();
+    auto rng = std::default_random_engine {time};
     std::shuffle(std::begin(edge_list), std::end(edge_list), rng);
     int vertex_count = size;
     while (vertex_count > 4) {
         Edge edge = edge_list[index];
-        if (vertex_set.find_set(edge.first) != vertex_set.find_set(edge.second)) {
-            vertex_set.union_set(edge.first, edge.second);
+        if (vertex_set.find(edge.first) != vertex_set.find(edge.second)) {
+            vertex_set.merge(edge.first, edge.second);
             vertex_count--;
         }
         index++;
+    }
+
+    vector<int> all;
+    auto it = vertex_set.node_array.begin();
+    while (it != vertex_set.node_array.end() && all.size()!=4) {
+        auto representative = vertex_set.find(&it->second)->value;
+        if (std::find(all.begin(), all.end(), representative)==all.end()) {
+            all.push_back(representative);
+        }
+        it++;
     }
     unordered_set<int> cut;
     unordered_set<int> complement;
     vector<int> out(7);
     for (int r=1; r<8; r++) {
-        int shift = 0;
         cut.clear();
         complement.clear();
-        auto it = vertex_set.node_array.begin();
-        cut.insert(vertex_set.find(&it->second)->value);
-        it++;
-        while (it != vertex_set.node_array.end()) {
-            auto representative = vertex_set.find(&it->second)->value;
-            if (cut.find(representative)==cut.end() && complement.find(representative)==complement.end()) {
-                // extract digit
-                if ((r>>shift)&1) {
-                    complement.insert(representative);
-                } else {
-                    cut.insert(representative);
-                }
-                shift++;
-                if (shift==3)
-                    continue;
+        cut.insert(all[0]);
+        for (int i=1; i<4; i++) {
+            if ((r>>(i-1))&1) {
+                complement.insert(all[i]);
+            } else {
+                cut.insert(all[i]);
             }
-            it++;
         }
         int cut_size = 0;
         for (int i=index; i<edge_list.size(); i++) {
@@ -75,9 +72,4 @@ vector<int> edge_list_graph::karger() {
         out[r-1] = cut_size;
     }
     return out;
-}
-
-void edge_list_graph::reset() {
-    vertex_set.reset();
-    index = 0;
 }
