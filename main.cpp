@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <algorithm>
+#include <chrono>
 
 #include "disjoint_set.h"
 #include "edge_list_graph.h"
@@ -42,23 +43,27 @@ int main() {
     for (auto vertex: vertices) {
         set.add_node(vertex);
     }
+    auto start = chrono::high_resolution_clock::now();
     Graph graph(set, edge_list);
     vector<int> test(1000, 0);
-    int bound = 1000;
+    int bound = 100;
     for (int i=0; i<bound; i++) {
-        if (i%25==0) {
-            cout<<i<<"\n";
-        }
         for (int size: karger(graph)) {
             test[size] += 1;
+        }
+        if (i%25==0) {
+            cout<<i<<"\n";
         }
     }
     for (int i=0; i<test.size(); i++) {
         int count = test[i];
         if (count != 0) {
-            cout << "Mincut has size " << i << " with probability p=" << count / (7.0*bound);
+            cout << "Mincut has size " << i << " with probability p=" << count / (7.0*bound)<<"\n";
             break;
         }
     }
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::milliseconds >(stop - start);
+    std::cout<<duration.count() / 1000.0;
     return 0;
 }

@@ -53,3 +53,10 @@ void disjoint_set::print() {
 size_t disjoint_set::size() {
     return node_array.size();
 }
+
+void disjoint_set::reset() {
+    for (auto &it: node_array) {
+        it.second.size = 1;
+        it.second.pointer = nullptr;
+    }
+}

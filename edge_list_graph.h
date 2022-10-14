@@ -7,20 +7,27 @@
 
 #include <vector>
 #include <utility>
+#include <unordered_map>
 
-#include "disjoint_set.h"
+#include "boost/pending/disjoint_sets.hpp"
+
+using namespace boost;
+using namespace std;
 
 typedef std::pair<int, int> Edge;
+typedef disjoint_sets<unordered_map<int, int>, unordered_map<int, int>> union_find;
 
 class edge_list_graph {
-
+    std::default_random_engine rng;
 public:
-    disjoint_set vertex_set;
+    disjoint_sets<union_find, union_find> vertex_set;
     vector<Edge> edge_list;
     int index, size;
-    edge_list_graph(disjoint_set, vector<Edge>);
+    template<typename k>
+    edge_list_graph(k, vector<Edge>);
     vector<int> karger();
-    int bad(int, unordered_set<int>);
+    int bad(int, const unordered_set<int>&);
+    void reset();
 };
 
 

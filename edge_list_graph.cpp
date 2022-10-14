@@ -6,18 +6,22 @@
 #include <algorithm>
 #include <chrono>
 #include <unordered_set>
+#include <utility>
 
 #include "edge_list_graph.h"
 
-edge_list_graph::edge_list_graph(disjoint_set set, vector<Edge> list) {
+template<typename k>
+edge_list_graph::edge_list_graph(k set, vector<Edge> list) {
     edge_list = list;
     vertex_set = set;
     index = 0;
-    size = vertex_set.size();
+    size = vertex_set.template count_sets();
+    unsigned int time = std::chrono::system_clock::now().time_since_epoch().count();
+    rng = std::default_random_engine {time};
 }
 
-int edge_list_graph::bad(int vertex, unordered_set<int> set) {
-    auto representative = vertex_set.find(vertex)->value;
+int edge_list_graph::bad(int vertex, const unordered_set<int>& set) {
+    auto representative = vertex_set.find_set(vertex);
     if (set.find(representative) != set.end()) {
         return 1;
     }
@@ -26,14 +30,12 @@ int edge_list_graph::bad(int vertex, unordered_set<int> set) {
 
 vector<int> edge_list_graph::karger() {
     // TODO: move this somewhere else
-    unsigned int time = std::chrono::system_clock::now().time_since_epoch().count();
-    auto rng = std::default_random_engine {time};
     std::shuffle(std::begin(edge_list), std::end(edge_list), rng);
     int vertex_count = size;
     while (vertex_count > 4) {
         Edge edge = edge_list[index];
-        if (vertex_set.find(edge.first) != vertex_set.find(edge.second)) {
-            vertex_set.merge(edge.first, edge.second);
+        if (vertex_set.find_set(edge.first) != vertex_set.find_set(edge.second)) {
+            vertex_set.union_set(edge.first, edge.second);
             vertex_count--;
         }
         index++;
@@ -58,6 +60,8 @@ vector<int> edge_list_graph::karger() {
                     cut.insert(representative);
                 }
                 shift++;
+                if (shift==3)
+                    continue;
             }
             it++;
         }
@@ -71,4 +75,9 @@ vector<int> edge_list_graph::karger() {
         out[r-1] = cut_size;
     }
     return out;
+}
+
+void edge_list_graph::reset() {
+    vertex_set.reset();
+    index = 0;
 }
