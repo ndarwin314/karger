@@ -5,6 +5,7 @@
 #include <random>
 #include <algorithm>
 #include <unordered_set>
+#include <set>
 #include <algorithm>
 #include <chrono>
 
@@ -28,7 +29,7 @@ int main() {
     }
 
     vector<Edge> edge_list;
-    unordered_set<int> vertices;
+    set<int> vertices;
     string line;
     while ( getline (file,line) ) {
         int split_index = line.find(' ');
@@ -40,14 +41,14 @@ int main() {
             edge_list.emplace_back(start, end);
         }
     }
-    disjoint_set set;
+    disjoint_set set(*vertices.end());
     for (auto vertex: vertices) {
         set.add_node(vertex);
     }
     auto start = chrono::high_resolution_clock::now();
     Graph graph(set, edge_list);
     vector<int> test(1000, 0);
-    int bound = 1000;
+    int bound = 100;
     for (int i=0; i<bound; i++) {
         if (i%(bound/10)==0) {
             cout<<i<<"\n";

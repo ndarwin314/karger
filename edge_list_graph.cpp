@@ -18,7 +18,7 @@ edge_list_graph::edge_list_graph(disjoint_set set, vector<Edge> list) {
 }
 
 int edge_list_graph::bad(int vertex, unordered_set<int> set) {
-    auto representative = vertex_set.find(vertex)->value;
+    auto representative = vertex_set.find(vertex);
     if (set.find(representative) != set.end()) {
         return 1;
     }
@@ -43,21 +43,21 @@ vector<int> edge_list_graph::karger() {
     }
 
     vector<int> all;
-    auto it = vertex_set.node_array.begin();
-    while (it != vertex_set.node_array.end() && all.size()!=4) {
-        auto representative = vertex_set.find(&it->second)->value;
+    for (node n: vertex_set.node_array) {
+        auto representative = vertex_set.find(n);
         if (std::find(all.begin(), all.end(), representative)==all.end()) {
             all.push_back(representative);
+            if (all.size() == 4)
+                break;
         }
-        it++;
     }
-    unordered_set<int> cut;
+    //unordered_set<int> cut;
     unordered_set<int> complement;
     vector<int> out(7);
     for (int r=1; r<8; r++) {
         //cut.clear();
         complement.clear();
-        cut.insert(all[0]);
+        //cut.insert(all[0]);
         for (int i=1; i<4; i++) {
             if ((r>>(i-1))&1) {
                 complement.insert(all[i]);

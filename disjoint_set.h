@@ -13,7 +13,7 @@ using namespace std;
 typedef pair<int, int> Edge;
 
 struct node{
-    node *pointer;
+    int pointer;
     int size;
     int value;
 };
@@ -21,12 +21,13 @@ struct node{
 class disjoint_set {
 
 public:
-    unordered_map<int, node> node_array;
+    vector<node> node_array;
     disjoint_set() = default;
+    disjoint_set(int);
     void add_node(int);
-    node* find(node*);
-    node* find(int);
-    void merge(node*, node*);
+    int find(node);
+    int find(int);
+    void merge(node, node);
     void merge(int, int);
     size_t size();
     void reset();
