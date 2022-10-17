@@ -47,7 +47,7 @@ int main() {
     auto start = chrono::high_resolution_clock::now();
     Graph graph(set, edge_list);
     vector<int> test(1000, 0);
-    int bound = 10000;
+    int bound = 1000;
     for (int i=0; i<bound; i++) {
         if (i%1000==0) {
             cout<<i<<"\n";

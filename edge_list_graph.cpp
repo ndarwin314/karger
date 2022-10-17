@@ -49,16 +49,12 @@ vector<int> edge_list_graph::karger() {
         it++;
     }
     unordered_set<int> cut;
-    unordered_set<int> complement;
     vector<int> out(7);
     for (int r=1; r<8; r++) {
         cut.clear();
-        complement.clear();
         cut.insert(all[0]);
         for (int i=1; i<4; i++) {
-            if ((r>>(i-1))&1) {
-                complement.insert(all[i]);
-            } else {
+            if (((r>>(i-1))&1)==0) {
                 cut.insert(all[i]);
             }
         }
