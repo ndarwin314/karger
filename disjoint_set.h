@@ -29,6 +29,7 @@ public:
     void merge(node*, node*);
     void merge(int, int);
     size_t size();
+    void reset();
     void print();
 };
 
